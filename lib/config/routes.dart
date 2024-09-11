@@ -6,30 +6,36 @@ class AppRouter {
     initialLocation: '/main/home',
     routes: [
       GoRoute(
-        path: '/main/:tab',
+        path: '/main/:subPath(.*)', // مسیر اصلی برای تب‌ها و تمامی زیرمسیرها
         builder: (context, state) {
-          final tab = state.pathParameters['tab']!;
+          final String path = state.uri.toString();
 
-          if (!['home', 'exchange', 'wallet'].contains(tab)) {
-            return MainPage(tab: 'home');
+          if (path.startsWith('/main/home')) {
+            return MainPage(
+              tab: 'home',
+              path: path,
+              // ارسال زیرمسیر به MainPage
+            );
+          } else if (path.startsWith('/main/exchange')) {
+            return MainPage(
+              tab: 'exchange',
+              path: path,
+              // ارسال زیرمسیر به MainPage
+            );
+          } else if (path.startsWith('/main/wallet')) {
+            return MainPage(
+              tab: 'wallet',
+              path: path,
+              // ارسال زیرمسیر به MainPage
+            );
+          } else {
+            return MainPage(
+              tab: 'home',
+              path: path,
+              // ارسال زیرمسیر به MainPage
+            );
           }
-
-          return MainPage(tab: tab);
         },
-        routes: [
-          GoRoute(
-            path: 'list',
-            builder: (context, state) {
-              return MainPage(tab: 'home');
-            },
-          ),
-          GoRoute(
-            path: 'deposit',
-            builder: (context, state) {
-              return MainPage(tab: 'wallet');
-            },
-          ),
-        ],
       ),
     ],
   );

@@ -17,9 +17,9 @@ part '../wallet/wallet_page.dart';
 
 class MainPage extends HookConsumerWidget {
   final String tab;
+  final String path;
 
-  MainPage({super.key, required this.tab});
-
+  MainPage({super.key, required this.tab, required this.path});
   final Map<String, int> _tabMap = {
     'home': 0,
     'exchange': 1,
@@ -49,6 +49,16 @@ class MainPage extends HookConsumerWidget {
       }
     });
 
+    // init state
+    useEffect(() {
+      Future.delayed(Duration.zero, () {
+        if (path.endsWith('list')) {
+          ref.read(homePageProvider.notifier).state = '/list';
+        } else if (path.endsWith('deposit')) {
+          ref.read(walletPageProvider.notifier).state = '/deposit';
+        }
+      });
+    }, []);
     return SafeArea(
         child: Scaffold(
       backgroundColor: const Color.fromARGB(255, 1, 18, 32),
@@ -142,16 +152,6 @@ class MainPage extends HookConsumerWidget {
                     ),
                     child: TabBar(
                         controller: tabBarController,
-                        onTap: (value) {
-                          if (value == 0) {
-                            ref.read(homePageProvider.notifier).state = '';
-                            context.go('/main/home');
-                          }
-                          if (value == 2) {
-                            ref.read(walletPageProvider.notifier).state = '';
-                            context.go('/main/wallet');
-                          }
-                        },
                         indicatorPadding:
                             const EdgeInsets.symmetric(vertical: 8),
                         indicator: BoxDecoration(
