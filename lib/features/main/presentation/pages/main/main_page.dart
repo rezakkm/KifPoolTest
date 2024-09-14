@@ -1,12 +1,12 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:glassy/glassy_card.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:kif_pool_test/core/constants/enums.dart';
 import 'package:kif_pool_test/features/main/presentation/pages/home/first_home_widget.dart';
 import 'package:kif_pool_test/features/main/presentation/pages/home/second_home_widget.dart';
-import 'package:kif_pool_test/features/main/presentation/pages/main/main_tabbar_widget.dart';
+import 'package:kif_pool_test/features/main/presentation/pages/main/main_nav_bar_widget.dart';
 import 'package:kif_pool_test/features/main/presentation/pages/shared/primary_textfield.dart';
 import 'package:kif_pool_test/features/main/presentation/pages/wallet/first_wallet_widget.dart';
 import 'package:kif_pool_test/features/main/presentation/pages/wallet/second_wallet_widget.dart';
@@ -31,33 +31,34 @@ class MainPage extends HookConsumerWidget {
     ref.watch(getListProvider);
     final homeState = ref.watch(homePageProvider);
     final walletState = ref.watch(walletPageProvider);
+    final selectedIndex = useState(0);
     final tabBarController =
         useTabController(initialLength: 3, initialIndex: _tabMap[tab] ?? 0);
-    tabBarController.addListener(() {
-      if (tabBarController.indexIsChanging) {
-        switch (tabBarController.index) {
+
+    // init state
+    useEffect(() {
+      Future.delayed(Duration.zero, () {
+        initMethod(ref, selectedIndex);
+      });
+      selectedIndex.addListener(() {
+        switch (selectedIndex.value) {
           case 0:
-            context.go('/main/home');
+            // print(0);
+            ref.read(homePageProvider).isNotEmpty
+                ? context.go('/main/home/list')
+                : context.go('/main/home');
             break;
           case 1:
             context.go('/main/exchange');
             break;
           case 2:
-            context.go('/main/wallet');
+            ref.read(walletPageProvider).isNotEmpty
+                ? context.go('/main/wallet/deposit')
+                : context.go('/main/wallet');
             break;
         }
-      }
-    });
-
-    // init state
-    useEffect(() {
-      Future.delayed(Duration.zero, () {
-        if (path.endsWith('list')) {
-          ref.read(homePageProvider.notifier).state = '/list';
-        } else if (path.endsWith('deposit')) {
-          ref.read(walletPageProvider.notifier).state = '/deposit';
-        }
       });
+      return null;
     }, []);
     return SafeArea(
         child: Scaffold(
@@ -74,9 +75,9 @@ class MainPage extends HookConsumerWidget {
           child: Stack(
             children: [
               // background
-              const GlassyCard(
-                child: SizedBox.expand(),
-              ),
+              BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                  child: const SizedBox.expand()),
               // appbar (top)
               Positioned(
                 right: 0,
@@ -134,43 +135,36 @@ class MainPage extends HookConsumerWidget {
                 ),
               ),
               // navbar
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Center(
-                  key: const Key('done'),
-                  child: Container(
-                    height: 76,
-                    width: 445,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    decoration: const BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(24),
-                          topRight: Radius.circular(24)),
-                    ),
-                    child: TabBar(
-                        controller: tabBarController,
-                        indicatorPadding:
-                            const EdgeInsets.symmetric(vertical: 8),
-                        indicator: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            color: Colors.white),
-                        tabs: const [
-                          MainTabBarWidget(
-                            icon: Icon(Icons.home),
-                          ),
-                          MainTabBarWidget(
-                            icon: Icon(Icons.currency_exchange_rounded),
-                          ),
-                          MainTabBarWidget(
-                            icon: Icon(Icons.wallet),
-                          ),
-                        ]),
-                  ),
-                ),
-              ),
+              Align(
+                  alignment: Alignment.bottomCenter,
+                  child: CurvedNavigationBar(
+                    index: selectedIndex.value,
+                    height: 60,
+                    backgroundColor: Colors.transparent,
+                    color: Colors.transparent,
+                    buttonBackgroundColor: Colors.blue,
+                    items: <Widget>[
+                      Icon(
+                        Icons.home,
+                        size: 30,
+                        color: iconColor(selectedIndex.value == 0),
+                      ),
+                      Icon(
+                        Icons.swap_vertical_circle_sharp,
+                        size: 30,
+                        color: iconColor(selectedIndex.value == 1),
+                      ),
+                      Icon(
+                        Icons.wallet,
+                        size: 30,
+                        color: iconColor(selectedIndex.value == 2),
+                      ),
+                    ],
+                    onTap: (index) {
+                      selectedIndex.value = index;
+                      tabBarController.animateTo(index);
+                    },
+                  )),
             ],
           )),
 
@@ -193,5 +187,24 @@ class MainPage extends HookConsumerWidget {
       //   currentIndex: 1,
       // ),
     ));
+  }
+
+  void initMethod(WidgetRef ref, ValueNotifier<int> selectedIndex) {
+    if (path.endsWith('list')) {
+      ref.read(homePageProvider.notifier).state = '/list';
+    } else if (path.endsWith('deposit')) {
+      ref.read(walletPageProvider.notifier).state = '/deposit';
+    }
+    if (path.contains('home')) {
+      selectedIndex.value = 0;
+    } else if (path.contains('exchange')) {
+      selectedIndex.value = 1;
+    } else if (path.contains('wallet')) {
+      selectedIndex.value = 2;
+    }
+  }
+
+  Color iconColor(bool selected) {
+    return selected ? Colors.white : const Color.fromARGB(255, 113, 183, 241);
   }
 }

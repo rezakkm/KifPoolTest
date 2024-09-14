@@ -9,7 +9,6 @@ class AppRouter {
         path: '/main/:subPath(.*)', // مسیر اصلی برای تب‌ها و تمامی زیرمسیرها
         builder: (context, state) {
           final String path = state.uri.toString();
-
           if (path.startsWith('/main/home')) {
             return MainPage(
               tab: 'home',
