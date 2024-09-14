@@ -37,6 +37,7 @@ class MainPage extends HookConsumerWidget {
 
     // init state
     useEffect(() {
+      // create route on navbar changes
       Future.delayed(Duration.zero, () {
         initMethod(ref, selectedIndex);
       });
@@ -60,6 +61,23 @@ class MainPage extends HookConsumerWidget {
       });
       return null;
     }, []);
+    var items = <Widget>[
+      Icon(
+        Icons.home,
+        size: 30,
+        color: iconColor(selectedIndex.value == 0),
+      ),
+      Icon(
+        Icons.swap_vertical_circle_sharp,
+        size: 30,
+        color: iconColor(selectedIndex.value == 1),
+      ),
+      Icon(
+        Icons.wallet,
+        size: 30,
+        color: iconColor(selectedIndex.value == 2),
+      ),
+    ];
     return SafeArea(
         child: Scaffold(
       backgroundColor: const Color.fromARGB(255, 1, 18, 32),
@@ -139,27 +157,11 @@ class MainPage extends HookConsumerWidget {
                   alignment: Alignment.bottomCenter,
                   child: CurvedNavigationBar(
                     index: selectedIndex.value,
-                    height: 60,
+                    height: 68,
                     backgroundColor: Colors.transparent,
                     color: Colors.transparent,
                     buttonBackgroundColor: Colors.blue,
-                    items: <Widget>[
-                      Icon(
-                        Icons.home,
-                        size: 30,
-                        color: iconColor(selectedIndex.value == 0),
-                      ),
-                      Icon(
-                        Icons.swap_vertical_circle_sharp,
-                        size: 30,
-                        color: iconColor(selectedIndex.value == 1),
-                      ),
-                      Icon(
-                        Icons.wallet,
-                        size: 30,
-                        color: iconColor(selectedIndex.value == 2),
-                      ),
-                    ],
+                    items: items,
                     onTap: (index) {
                       selectedIndex.value = index;
                       tabBarController.animateTo(index);
@@ -167,25 +169,6 @@ class MainPage extends HookConsumerWidget {
                   )),
             ],
           )),
-
-      //  GlassBottomBar(
-      //   items: [
-      //     GlassBottomBarItem(
-      //       icon: const Icon(Icons.home),
-      //       title: const GlassText("Home"),
-      //     ),
-      //     GlassBottomBarItem(
-      //       icon: const Icon(Icons.search),
-      //       title: const GlassText("Search"),
-      //     ),
-      //     GlassBottomBarItem(
-      //       icon: const Icon(Icons.settings),
-      //       title: const GlassText("Settings"),
-      //     ),
-      //   ],
-      //   onTap: (i) {},
-      //   currentIndex: 1,
-      // ),
     ));
   }
 

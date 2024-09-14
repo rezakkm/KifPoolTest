@@ -44,17 +44,14 @@ class NavCustomPainter extends CustomPainter {
       ..lineTo(0, size.height)
       ..close();
     canvas.drawPath(path, paint);
-    // Paint برای بوردر سفید
     final borderPaint = Paint()
-      ..color = Colors.white // رنگ سفید برای بوردر
-      ..style = PaintingStyle.stroke // حالت stroke برای بوردر
-      ..strokeWidth = 0.5; // ضخامت بوردر
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.2;
 
-    // رسم مسیر برای بوردر
     canvas.drawPath(path, borderPaint);
   }
 
-  // متد جدید برای ایجاد path انحنا
   Path getClipPath(Size size) {
     final path = Path()
       ..moveTo(0, 0)

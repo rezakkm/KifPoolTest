@@ -22,7 +22,7 @@ class CurvedNavigationBar extends StatefulWidget {
   final double? maxWidth;
 
   CurvedNavigationBar({
-    Key? key,
+    super.key,
     required this.items,
     this.index = 0,
     this.color = Colors.white,
@@ -38,8 +38,7 @@ class CurvedNavigationBar extends StatefulWidget {
         assert(items.isNotEmpty),
         assert(0 <= index && index < items.length),
         assert(0 <= height && height <= 75.0),
-        assert(maxWidth == null || 0 <= maxWidth),
-        super(key: key);
+        assert(maxWidth == null || 0 <= maxWidth);
 
   @override
   CurvedNavigationBarState createState() => CurvedNavigationBarState();
