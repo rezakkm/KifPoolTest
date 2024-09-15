@@ -183,6 +183,8 @@ class MainPage extends HookConsumerWidget {
     if (path.contains("home")) {
       if (!path.endsWith('list')) {
         ref.read(homePageProvider.notifier).state = '';
+      } else {
+        ref.read(homePageProvider.notifier).state = 'list';
       }
       selectedIndex.value = 0;
       tabBarController.animateTo(0);
@@ -192,6 +194,8 @@ class MainPage extends HookConsumerWidget {
     } else if (path.contains("wallet")) {
       if (!path.endsWith('deposit')) {
         ref.read(walletPageProvider.notifier).state = '';
+      } else {
+        ref.read(walletPageProvider.notifier).state = 'deposit';
       }
       selectedIndex.value = 2;
       tabBarController.animateTo(2);
