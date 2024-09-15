@@ -11,6 +11,7 @@ import 'package:kif_pool_test/features/main/presentation/pages/shared/primary_te
 import 'package:kif_pool_test/features/main/presentation/pages/wallet/first_wallet_widget.dart';
 import 'package:kif_pool_test/features/main/presentation/pages/wallet/second_wallet_widget.dart';
 import 'package:kif_pool_test/features/main/presentation/provider/get_list_provider.dart';
+import 'package:kif_pool_test/features/main/presentation/provider/route_provider.dart';
 part '../home/home_page.dart';
 part '../exchange/exchange_page.dart';
 part '../wallet/wallet_page.dart';
@@ -37,16 +38,13 @@ class MainPage extends HookConsumerWidget {
 
     // init state
     useEffect(() {
-      mergePathwithNavBar(selectedIndex, tabBarController);
       // create route on navbar changes
       Future.delayed(Duration.zero, () {
         initMethod(ref, selectedIndex);
       });
-
-      selectedIndex.addListener(() {
-        switch (selectedIndex.value) {
+      tabBarController.addListener(() {
+        switch (tabBarController.index) {
           case 0:
-            // print(0);
             ref.read(homePageProvider).isNotEmpty
                 ? context.go('/main/home/list')
                 : context.go('/main/home');
@@ -63,6 +61,11 @@ class MainPage extends HookConsumerWidget {
       });
       return null;
     }, []);
+    ref.listen(routeProvider, (prev, next) {
+      if (prev != next) {
+        mergePathwithNavBar(selectedIndex, tabBarController, ref);
+      }
+    });
     var items = <Widget>[
       Icon(
         Icons.home,
@@ -174,15 +177,22 @@ class MainPage extends HookConsumerWidget {
     ));
   }
 
-  void mergePathwithNavBar(
-      ValueNotifier<int> selectedIndex, TabController tabBarController) {
+  void mergePathwithNavBar(ValueNotifier<int> selectedIndex,
+      TabController tabBarController, WidgetRef ref) {
+    final String path = ref.read(routeProvider);
     if (path.contains("home")) {
+      if (!path.endsWith('list')) {
+        ref.read(homePageProvider.notifier).state = '';
+      }
       selectedIndex.value = 0;
       tabBarController.animateTo(0);
     } else if (path.contains("exchange")) {
       selectedIndex.value = 1;
       tabBarController.animateTo(1);
     } else if (path.contains("wallet")) {
+      if (!path.endsWith('deposit')) {
+        ref.read(walletPageProvider.notifier).state = '';
+      }
       selectedIndex.value = 2;
       tabBarController.animateTo(2);
     }
