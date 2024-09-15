@@ -35,13 +35,26 @@ class MainPage extends HookConsumerWidget {
     final selectedIndex = useState(0);
     final tabBarController =
         useTabController(initialLength: 3, initialIndex: _tabMap[tab] ?? 0);
+    var items = <Widget>[
+      Icon(
+        Icons.home,
+        size: 30,
+        color: iconColor(selectedIndex.value == 0),
+      ),
+      Icon(
+        Icons.swap_vertical_circle_sharp,
+        size: 30,
+        color: iconColor(selectedIndex.value == 1),
+      ),
+      Icon(
+        Icons.wallet,
+        size: 30,
+        color: iconColor(selectedIndex.value == 2),
+      ),
+    ];
 
     // init state
     useEffect(() {
-      // create route on navbar changes
-      Future.delayed(Duration.zero, () {
-        initMethod(ref, selectedIndex);
-      });
       tabBarController.addListener(() {
         switch (tabBarController.index) {
           case 0:
@@ -66,23 +79,8 @@ class MainPage extends HookConsumerWidget {
         mergePathwithNavBar(selectedIndex, tabBarController, ref);
       }
     });
-    var items = <Widget>[
-      Icon(
-        Icons.home,
-        size: 30,
-        color: iconColor(selectedIndex.value == 0),
-      ),
-      Icon(
-        Icons.swap_vertical_circle_sharp,
-        size: 30,
-        color: iconColor(selectedIndex.value == 1),
-      ),
-      Icon(
-        Icons.wallet,
-        size: 30,
-        color: iconColor(selectedIndex.value == 2),
-      ),
-    ];
+
+    // Ui
     return SafeArea(
         child: Scaffold(
       backgroundColor: const Color.fromARGB(255, 1, 18, 32),
@@ -199,21 +197,6 @@ class MainPage extends HookConsumerWidget {
       }
       selectedIndex.value = 2;
       tabBarController.animateTo(2);
-    }
-  }
-
-  void initMethod(WidgetRef ref, ValueNotifier<int> selectedIndex) {
-    if (path.endsWith('list')) {
-      ref.read(homePageProvider.notifier).state = '/list';
-    } else if (path.endsWith('deposit')) {
-      ref.read(walletPageProvider.notifier).state = '/deposit';
-    }
-    if (path.contains('home')) {
-      selectedIndex.value = 0;
-    } else if (path.contains('exchange')) {
-      selectedIndex.value = 1;
-    } else if (path.contains('wallet')) {
-      selectedIndex.value = 2;
     }
   }
 
