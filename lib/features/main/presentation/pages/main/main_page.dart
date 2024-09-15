@@ -37,10 +37,12 @@ class MainPage extends HookConsumerWidget {
 
     // init state
     useEffect(() {
+      mergePathwithNavBar(selectedIndex, tabBarController);
       // create route on navbar changes
       Future.delayed(Duration.zero, () {
         initMethod(ref, selectedIndex);
       });
+
       selectedIndex.addListener(() {
         switch (selectedIndex.value) {
           case 0:
@@ -170,6 +172,20 @@ class MainPage extends HookConsumerWidget {
             ],
           )),
     ));
+  }
+
+  void mergePathwithNavBar(
+      ValueNotifier<int> selectedIndex, TabController tabBarController) {
+    if (path.contains("home")) {
+      selectedIndex.value = 0;
+      tabBarController.animateTo(0);
+    } else if (path.contains("exchange")) {
+      selectedIndex.value = 1;
+      tabBarController.animateTo(1);
+    } else if (path.contains("wallet")) {
+      selectedIndex.value = 2;
+      tabBarController.animateTo(2);
+    }
   }
 
   void initMethod(WidgetRef ref, ValueNotifier<int> selectedIndex) {

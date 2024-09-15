@@ -10,12 +10,8 @@ class WalletPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     final walletSwitchKey = ref.watch(walletPageProvider);
-    return IndexedStack(
-      index: walletSwitchKey == '' ? 0 : 1,
-      children: const [
-        FirstWalletWidget(),
-        SecondWalletWidget(),
-      ],
-    );
+    return walletSwitchKey == ''
+        ? const FirstWalletWidget()
+        : const SecondWalletWidget();
   }
 }

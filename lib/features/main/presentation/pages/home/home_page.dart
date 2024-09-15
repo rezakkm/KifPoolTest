@@ -30,12 +30,8 @@ class _HomePage extends ConsumerState<HomePage>
       return null;
     }, []);
 
-    return IndexedStack(
-      index: homeSwitchKey == '' ? 0 : 1,
-      children: [
-        FirstHomeWidget(listDataController: listDataController),
-        const SecondHomeWidget(),
-      ],
-    );
+    return homeSwitchKey == ''
+        ? FirstHomeWidget(listDataController: listDataController)
+        : const SecondHomeWidget();
   }
 }
