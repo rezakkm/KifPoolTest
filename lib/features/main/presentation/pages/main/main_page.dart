@@ -32,24 +32,23 @@ class MainPage extends HookConsumerWidget {
     ref.watch(getListProvider);
     final homeState = ref.watch(homePageProvider);
     final walletState = ref.watch(walletPageProvider);
-    final selectedIndex = useState(0);
     final tabBarController =
         useTabController(initialLength: 3, initialIndex: _tabMap[tab] ?? 0);
     var items = <Widget>[
       Icon(
         Icons.home,
         size: 30,
-        color: iconColor(selectedIndex.value == 0),
+        color: iconColor(tabBarController.index == 0),
       ),
       Icon(
         Icons.swap_vertical_circle_sharp,
         size: 30,
-        color: iconColor(selectedIndex.value == 1),
+        color: iconColor(tabBarController.index == 1),
       ),
       Icon(
         Icons.wallet,
         size: 30,
-        color: iconColor(selectedIndex.value == 2),
+        color: iconColor(tabBarController.index == 2),
       ),
     ];
 
@@ -76,7 +75,7 @@ class MainPage extends HookConsumerWidget {
     }, []);
     ref.listen(routeProvider, (prev, next) {
       if (prev != next) {
-        mergePathwithNavBar(selectedIndex, tabBarController, ref);
+        mergePathwithNavBar(tabBarController, ref);
       }
     });
 
@@ -159,14 +158,13 @@ class MainPage extends HookConsumerWidget {
               Align(
                   alignment: Alignment.bottomCenter,
                   child: CurvedNavigationBar(
-                    index: selectedIndex.value,
+                    index: tabBarController.index,
                     height: 68,
                     backgroundColor: Colors.transparent,
                     color: Colors.transparent,
                     buttonBackgroundColor: Colors.blue,
                     items: items,
                     onTap: (index) {
-                      selectedIndex.value = index;
                       tabBarController.animateTo(index);
                     },
                   )),
@@ -175,8 +173,7 @@ class MainPage extends HookConsumerWidget {
     ));
   }
 
-  void mergePathwithNavBar(ValueNotifier<int> selectedIndex,
-      TabController tabBarController, WidgetRef ref) {
+  void mergePathwithNavBar(TabController tabBarController, WidgetRef ref) {
     final String path = ref.read(routeProvider);
     if (path.contains("home")) {
       if (!path.endsWith('list')) {
@@ -184,10 +181,8 @@ class MainPage extends HookConsumerWidget {
       } else {
         ref.read(homePageProvider.notifier).state = 'list';
       }
-      selectedIndex.value = 0;
       tabBarController.animateTo(0);
     } else if (path.contains("exchange")) {
-      selectedIndex.value = 1;
       tabBarController.animateTo(1);
     } else if (path.contains("wallet")) {
       if (!path.endsWith('deposit')) {
@@ -195,7 +190,6 @@ class MainPage extends HookConsumerWidget {
       } else {
         ref.read(walletPageProvider.notifier).state = 'deposit';
       }
-      selectedIndex.value = 2;
       tabBarController.animateTo(2);
     }
   }
