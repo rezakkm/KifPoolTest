@@ -22,22 +22,18 @@ class AppRouter {
             if (path.startsWith('/main/home')) {
               return MainPage(
                 tab: 'home',
-                path: path,
               );
             } else if (path.startsWith('/main/exchange')) {
               return MainPage(
                 tab: 'exchange',
-                path: path,
               );
             } else if (path.startsWith('/main/wallet')) {
               return MainPage(
                 tab: 'wallet',
-                path: path,
               );
             } else {
               return MainPage(
                 tab: 'home',
-                path: path,
               );
             }
           },

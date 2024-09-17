@@ -18,9 +18,11 @@ part '../wallet/wallet_page.dart';
 
 class MainPage extends HookConsumerWidget {
   final String tab;
-  final String path;
 
-  MainPage({super.key, required this.tab, required this.path});
+  MainPage({
+    super.key,
+    required this.tab,
+  });
   final Map<String, int> _tabMap = {
     'home': 0,
     'exchange': 1,
@@ -30,6 +32,7 @@ class MainPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     ref.watch(getListProvider);
+    final path = ref.watch(routeProvider);
     final homeState = ref.watch(homePageProvider);
     final walletState = ref.watch(walletPageProvider);
     final tabBarController =
@@ -51,32 +54,42 @@ class MainPage extends HookConsumerWidget {
         color: iconColor(tabBarController.index == 2),
       ),
     ];
+    void goRoute(String path) {
+      if (ref.read(routeProvider) != path) {
+        context.go(path);
+      }
+    }
 
     // init state
     useEffect(() {
+      Future.delayed((Duration.zero), () {
+        mergePathwithNavBar(tabBarController, ref, path);
+      });
       tabBarController.addListener(() {
         switch (tabBarController.index) {
           case 0:
             ref.read(homePageProvider).isNotEmpty
-                ? context.go('/main/home/list')
-                : context.go('/main/home');
+                ? goRoute('/main/home/list')
+                : goRoute('/main/home');
+
             break;
           case 1:
-            context.go('/main/exchange');
+            goRoute('/main/exchange');
             break;
           case 2:
             ref.read(walletPageProvider).isNotEmpty
-                ? context.go('/main/wallet/deposit')
-                : context.go('/main/wallet');
+                ? goRoute('/main/wallet/deposit')
+                : goRoute('/main/wallet');
+
             break;
         }
       });
       return null;
     }, []);
     ref.listen(routeProvider, (prev, next) {
-      if (prev != next) {
-        mergePathwithNavBar(tabBarController, ref);
-      }
+      print('asdas: $next   $prev');
+
+      mergePathwithNavBar(tabBarController, ref, next);
     });
 
     // Ui
@@ -173,8 +186,8 @@ class MainPage extends HookConsumerWidget {
     ));
   }
 
-  void mergePathwithNavBar(TabController tabBarController, WidgetRef ref) {
-    final String path = ref.read(routeProvider);
+  void mergePathwithNavBar(
+      TabController tabBarController, WidgetRef ref, String path) {
     if (path.contains("home")) {
       if (!path.endsWith('list')) {
         ref.read(homePageProvider.notifier).state = '';
