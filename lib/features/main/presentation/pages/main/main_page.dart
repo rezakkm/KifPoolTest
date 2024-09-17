@@ -87,8 +87,6 @@ class MainPage extends HookConsumerWidget {
       return null;
     }, []);
     ref.listen(routeProvider, (prev, next) {
-      print('asdas: $next   $prev');
-
       mergePathwithNavBar(tabBarController, ref, next);
     });
 
